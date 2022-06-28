@@ -2,14 +2,18 @@
 
 package main
 
-import "os"
+import (
+	_ "github.com/lib/pq"
+	"go-mux/apis"
+	"go-mux/config"
+	"log"
+	"net/http"
+)
 
 func main() {
-	a := App{}
-	a.Initialize(
-		os.Getenv("APP_DB_USERNAME"),
-		os.Getenv("APP_DB_PASSWORD"),
-		os.Getenv("APP_DB_NAME"))
 
-	a.Run(":8010")
+	db := config.ConnectDB()
+	router := apis.Router(db)
+
+	log.Fatal(http.ListenAndServe(":8010", router))
 }
